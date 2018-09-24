@@ -72,20 +72,26 @@ TrayIcon createTrayIcon(Image initialImage, Anything(TrayIcon) reset) {
     value outsideHeight = iconHeight - marginHeight * 2;
     value insideWidth = outsideWidth - border * 2;
     value insideHeight = outsideHeight - border * 2;
-    value frameCount = insideHeight + 1;
+    value frameCount = insideWidth * insideHeight + 1;
     value image = BufferedImage(iconWidth * frameCount, iconHeight, BufferedImage.typeIntArgb);
     
     for (frame in 0:frameCount) {
-        for (x in (marginWidth + iconWidth * frame):outsideWidth) {
+        value frameX = marginWidth + iconWidth * frame;
+        
+        for (x in frameX:outsideWidth) {
             for (y in marginHeight:outsideHeight) {
                 image.setRGB(x, y, #ff_00_00_00);
             }
         }
         
-        for (x in (marginWidth + iconWidth * frame + border):insideWidth) {
-            for (y in (marginHeight + border):frame) {
-                image.setRGB(x, iconHeight - y - 1, insideColor(frame, frameCount - 1));
-            }
+        value insideX = frameX + border;
+        value insideY = iconHeight - marginHeight - border - 1;
+        
+        for (pixel in 0:frame) {
+            value x = pixel % insideWidth;
+            value y = pixel / insideWidth;
+            
+            image.setRGB(insideX + x, insideY - y, insideColor(frame, frameCount - 1));
         }
     }
     
